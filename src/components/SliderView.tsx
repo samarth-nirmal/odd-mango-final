@@ -21,13 +21,54 @@ const SliderCardMedia: React.FC<{
   fisheyeOn: boolean;
   isDragging: boolean;
 }> = ({ project, isActive, curveMode, fisheyeOn, isDragging }) => {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isVideoActive, setIsVideoActive] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isVideo = Boolean(project.video) && (project.type === 'motion' || Boolean(project.video));
+
+  const handleMouseEnter = () => {
+    // Only the center image (isActive) should play video on hover
+    if (isDragging || !isVideo || !isActive) return;
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+    }
+    // Extended intentional delay (750ms) on hover before playing video
+    hoverTimerRef.current = setTimeout(() => {
+      setIsVideoActive(true);
+    }, 750);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    setIsVideoActive(false);
+  };
+
+  // If card loses active status or user starts dragging, immediately cancel pending timer and stop playback
+  useEffect(() => {
+    if (!isActive || isDragging) {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+        hoverTimerRef.current = null;
+      }
+      setIsVideoActive(false);
+    }
+  }, [isActive, isDragging]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!isVideo || !videoRef.current) return;
-    if (isHovered && !isDragging) {
+    if (isVideoActive && isActive && !isDragging) {
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
         playPromise.catch(() => {});
@@ -35,13 +76,13 @@ const SliderCardMedia: React.FC<{
     } else {
       videoRef.current.pause();
     }
-  }, [isHovered, isDragging, isVideo]);
+  }, [isVideoActive, isActive, isDragging, isVideo]);
 
   return (
     <div
       className="relative w-full h-full overflow-hidden bg-black"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Image in Frame */}
       <img
@@ -58,11 +99,11 @@ const SliderCardMedia: React.FC<{
         }}
         className={`w-full h-full object-cover select-none pointer-events-none transition-all duration-500 ${
           fisheyeOn && isActive ? 'fisheye-optical' : ''
-        } ${isVideo && isHovered && !isDragging ? 'opacity-0' : 'opacity-100'}`}
+        } ${isVideo && isVideoActive && isActive && !isDragging ? 'opacity-0' : 'opacity-100'}`}
       />
 
-      {/* Video in Frame on hover */}
-      {isVideo && project.video && (
+      {/* Video in Frame on hover with slight delay - only active center card */}
+      {isVideo && project.video && isActive && (
         <video
           ref={videoRef}
           src={project.video}
@@ -71,7 +112,7 @@ const SliderCardMedia: React.FC<{
           loop
           preload="metadata"
           className={`absolute inset-0 w-full h-full object-cover select-none pointer-events-none transition-opacity duration-300 ${
-            isHovered && !isDragging ? 'opacity-100' : 'opacity-0'
+            isVideoActive && !isDragging ? 'opacity-100' : 'opacity-0'
           }`}
         />
       )}

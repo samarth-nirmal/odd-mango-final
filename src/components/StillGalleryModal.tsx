@@ -209,15 +209,11 @@ export const StillGalleryModal: React.FC<StillGalleryModalProps> = ({
   const totalTicks = 71;
 
   return (
-    <motion.div
+    <div
       key={`gallery-screen-wrapper-${project.id}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, ease: 'easeInOut' }}
       className="fixed inset-0 z-50 overflow-hidden pointer-events-auto"
     >
-      {/* 1. BLUE SLIDE: Glides across and fully covers the entire screen first */}
+      {/* 1. BLUE SLIDE: Glides across and fully covers the entire screen first (solid, sharp slit) */}
       <motion.div
         key={`blue-slide-${project.id}`}
         initial={{ x: '100%' }}
@@ -231,7 +227,7 @@ export const StillGalleryModal: React.FC<StillGalleryModalProps> = ({
           ease: [0.14, 1, 0.22, 1],
         }}
         style={{ willChange: 'transform' }}
-        className="fixed inset-0 z-50 bg-[#2554f2] shadow-[-35px_0_80px_rgba(0,0,0,0.45)] pointer-events-none"
+        className="fixed inset-0 z-50 bg-[#2554f2] pointer-events-none"
       />
 
       {/* 2. WHITE SLIDE: Arrives as soon as blue covers the screen, entering slightly faster with smooth deceleration */}
@@ -250,7 +246,7 @@ export const StillGalleryModal: React.FC<StillGalleryModalProps> = ({
           ease: [0.12, 1, 0.2, 1],
         }}
         style={{ willChange: 'transform' }}
-        className="fixed inset-0 z-[55] bg-white text-[#111111] select-none flex flex-col justify-between overflow-hidden shadow-[-35px_0_80px_rgba(0,0,0,0.25)] pointer-events-auto"
+        className="fixed inset-0 z-[55] bg-white text-[#111111] select-none flex flex-col justify-between overflow-hidden pointer-events-auto"
       >
         {/* TOP HEADER */}
         <header className="px-6 sm:px-10 pt-6 pb-2 flex items-start justify-between text-sm sm:text-base font-medium tracking-tight">
@@ -456,6 +452,6 @@ export const StillGalleryModal: React.FC<StillGalleryModalProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 };

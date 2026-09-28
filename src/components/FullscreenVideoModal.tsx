@@ -153,15 +153,11 @@ export const FullscreenVideoModal: React.FC<FullscreenVideoModalProps> = ({
   };
 
   return (
-    <motion.div
+    <div
       key={`fullscreen-video-wrapper-${project.id}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.35, ease: 'easeInOut' }}
       className="fixed inset-0 z-50 overflow-hidden pointer-events-auto"
     >
-      {/* 1. BLUE SLIDE: Glides across and fully covers the entire screen first */}
+      {/* 1. BLUE SLIDE: Glides across and fully covers the entire screen first (solid, sharp slit) */}
       <motion.div
         key={`blue-slide-video-${project.id}`}
         initial={{ x: '100%' }}
@@ -175,7 +171,7 @@ export const FullscreenVideoModal: React.FC<FullscreenVideoModalProps> = ({
           ease: [0.14, 1, 0.22, 1],
         }}
         style={{ willChange: 'transform' }}
-        className="fixed inset-0 z-50 bg-[#2554f2] shadow-[-35px_0_80px_rgba(0,0,0,0.45)] pointer-events-none"
+        className="fixed inset-0 z-50 bg-[#2554f2] pointer-events-none"
       />
 
       {/* 2. FULLSCREEN VIDEO SCREEN: Arrives right behind blue slide with silky smooth deceleration */}
@@ -194,7 +190,7 @@ export const FullscreenVideoModal: React.FC<FullscreenVideoModalProps> = ({
           ease: [0.12, 1, 0.2, 1],
         }}
         style={{ willChange: 'transform' }}
-        className="fixed inset-0 z-[55] bg-black text-[#fcf8ef] select-none flex flex-col justify-between overflow-hidden shadow-[-35px_0_80px_rgba(0,0,0,0.45)] pointer-events-auto"
+        className="fixed inset-0 z-[55] bg-black text-[#fcf8ef] select-none flex flex-col justify-between overflow-hidden pointer-events-auto"
       >
         {/* Fullscreen Video: Plays seamlessly Edge-to-Edge */}
         <div
@@ -341,6 +337,6 @@ export const FullscreenVideoModal: React.FC<FullscreenVideoModalProps> = ({
           </div>
         </footer>
       </motion.div>
-    </motion.div>
+    </div>
   );
 };
