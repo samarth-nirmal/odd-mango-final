@@ -259,7 +259,7 @@ export const StillGalleryModal: React.FC<StillGalleryModalProps> = ({
             }}
             className="text-3xl sm:text-4xl font-extrabold text-black tracking-tighter leading-none hover:opacity-70 transition-opacity cursor-pointer flex items-baseline"
           >
-            <span>ODD</span>
+            <span>ODD MANGO</span>
             <sup className="text-xs sm:text-sm font-bold ml-0.5 relative -top-3">®</sup>
           </button>
 

@@ -41,7 +41,7 @@ export const StudioModal: React.FC<StudioModalProps> = ({ isOpen, onClose }) => 
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-baseline gap-2">
-              <span className="text-xl sm:text-2xl font-extrabold text-[#fcf8ef]">ODD</span>
+              <span className="text-xl sm:text-2xl font-extrabold text-[#fcf8ef]">ODD MANGO</span>
               <sup className="text-xs font-bold">®</sup>
             </div>
 

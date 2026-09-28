@@ -40,8 +40,8 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       <header className="fixed top-0 inset-x-0 z-40 px-6 sm:px-10 pt-[max(1.5rem,calc(env(safe-area-inset-top)+0.5rem))] pb-2 pointer-events-none flex items-start justify-between text-sm sm:text-base font-medium tracking-tight">
-        {/* Left: RS® Logo + Tagline */}
-        <div className="flex items-start gap-4 sm:gap-6 pointer-events-auto">
+        {/* Left: Brand Logo */}
+        <div className="flex items-start pointer-events-auto">
           <button
             onClick={() => {
               playTick();
@@ -49,14 +49,9 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="text-3xl sm:text-4xl font-extrabold text-[#fcf8ef] tracking-tighter leading-none hover:opacity-75 transition-opacity cursor-pointer flex items-baseline"
           >
-            <span>ODD</span>
+            <span>ODD MANGO</span>
             <sup className="text-sm font-bold ml-0.5">®</sup>
           </button>
-
-          <div className="hidden md:flex flex-col text-xs sm:text-sm text-[#cbc7c2] leading-tight font-normal uppercase tracking-normal">
-            <span>documenting emotion,</span>
-            <span>movement and meaning.</span>
-          </div>
         </div>
 
         {/* Center: View Toggles (SLIDER | LIST) - Untouched on md: and above, hidden on mobile */}
@@ -164,7 +159,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Drawer Top: Logo + Close */}
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-baseline gap-1 text-3xl font-extrabold text-[#fcf8ef] tracking-tighter">
-                <span>ODD</span>
+                <span>ODD MANGO</span>
                 <sup className="text-xs font-bold">®</sup>
               </div>
 
@@ -231,9 +226,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Pune, Maharashtra</span>
                 <span>Since ©2016</span>
               </div>
-              <p className="text-[10px] text-[#c7c4bd]/40 mt-1">
-                Documenting emotion, movement and meaning.
-              </p>
             </div>
           </motion.div>
         )}

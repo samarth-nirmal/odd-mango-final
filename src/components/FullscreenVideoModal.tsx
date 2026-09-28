@@ -220,7 +220,7 @@ export const FullscreenVideoModal: React.FC<FullscreenVideoModalProps> = ({
             }}
             className="text-3xl sm:text-4xl font-extrabold text-[#fcf8ef] tracking-tighter leading-none hover:opacity-75 transition-opacity cursor-pointer flex items-baseline pointer-events-auto drop-shadow-md"
           >
-            <span>ODD</span>
+            <span>ODD MANGO</span>
             <sup className="text-xs sm:text-sm font-bold ml-0.5 relative -top-3">®</sup>
           </button>
 

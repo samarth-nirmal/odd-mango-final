@@ -138,6 +138,7 @@ export const SliderView: React.FC<SliderViewProps> = ({
   const startScrollRef = useRef(0);
   const hasDraggedRef = useRef(false);
   const [isHoveringStage, setIsHoveringStage] = useState(false);
+  const [isHoveringCenterCard, setIsHoveringCenterCard] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [windowSize, setWindowSize] = useState(() => ({
     width: typeof window !== 'undefined' ? (window.visualViewport?.width || window.innerWidth) : 1200,
@@ -342,6 +343,11 @@ export const SliderView: React.FC<SliderViewProps> = ({
     }
   }, [currentIndex, displayProjects, displayTotal]);
 
+  // Reset center hover when active project changes
+  useEffect(() => {
+    setIsHoveringCenterCard(false);
+  }, [currentIndex]);
+
   // Responsive frame size: full-screen on mobile, tall portrait frames on desktop
   useEffect(() => {
     const updateSize = () => {
@@ -543,7 +549,13 @@ export const SliderView: React.FC<SliderViewProps> = ({
   const lastTimeRef = useRef(0);
   const velocityRef = useRef(0);
   const startYRef = useRef(0);
-  const clickedCardRef = useRef<{ project: DisplayProject; startX: number; startY: number } | null>(null);
+  const clickedCardRef = useRef<{
+    project: DisplayProject;
+    startX: number;
+    startY: number;
+    continuousOffset: number;
+    isActive: boolean;
+  } | null>(null);
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
@@ -590,6 +602,7 @@ export const SliderView: React.FC<SliderViewProps> = ({
     if (dist > 8) {
       hasDraggedRef.current = true;
       setIsDragging(true);
+      setIsHoveringCenterCard(false);
       try {
         if (!containerRef.current?.hasPointerCapture(e.pointerId)) {
           containerRef.current?.setPointerCapture(e.pointerId);
@@ -620,10 +633,16 @@ export const SliderView: React.FC<SliderViewProps> = ({
         e.clientY - clickedCardRef.current.startY
       );
       if (dist < 12) {
-        const card = clickedCardRef.current.project;
-        playShutter();
-        setCurrentIndex(card.originalIndex);
-        onSelectProject(card);
+        const { project: card, continuousOffset, isActive } = clickedCardRef.current;
+        if (isActive) {
+          playShutter();
+          onSelectProject(card);
+        } else {
+          // If clicked on non-center card, do not open — bring it smoothly to center
+          playTick();
+          targetScrollRef.current = Math.round(smoothScrollRef.current + continuousOffset);
+          setCurrentIndex(card.originalIndex);
+        }
         clickedCardRef.current = null;
         return;
       }
@@ -664,6 +683,7 @@ export const SliderView: React.FC<SliderViewProps> = ({
       }}
       onPointerLeave={() => {
         setIsHoveringStage(false);
+        setIsHoveringCenterCard(false);
       }}
       className="relative w-full h-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none touch-none"
     >
@@ -811,9 +831,27 @@ export const SliderView: React.FC<SliderViewProps> = ({
               <div
                 key={project.virtualKey}
                 id={`frame-card-${project.virtualKey}`}
+                onPointerEnter={() => {
+                  if (isActive && !isDraggingRef.current) {
+                    setIsHoveringCenterCard(true);
+                  } else {
+                    setIsHoveringCenterCard(false);
+                  }
+                }}
+                onPointerLeave={() => {
+                  if (isActive) {
+                    setIsHoveringCenterCard(false);
+                  }
+                }}
                 onPointerDown={(e) => {
                   if (e.button !== 0 && e.pointerType === 'mouse') return;
-                  clickedCardRef.current = { project, startX: e.clientX, startY: e.clientY };
+                  clickedCardRef.current = {
+                    project,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    continuousOffset,
+                    isActive,
+                  };
                 }}
                 onPointerUp={(e) => {
                   if (e.button !== 0 && e.pointerType === 'mouse') return;
@@ -826,18 +864,30 @@ export const SliderView: React.FC<SliderViewProps> = ({
                       e.clientY - clickedCardRef.current.startY
                     );
                     if (dist < 10) {
-                      playShutter();
-                      setCurrentIndex(project.originalIndex);
-                      onSelectProject(project);
+                      if (isActive) {
+                        playShutter();
+                        onSelectProject(project);
+                      } else {
+                        // Non-center card clicked: do not open, bring smoothly to center
+                        playTick();
+                        targetScrollRef.current = Math.round(smoothScrollRef.current + continuousOffset);
+                        setCurrentIndex(project.originalIndex);
+                      }
                       clickedCardRef.current = null;
                     }
                   }
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  playShutter();
-                  setCurrentIndex(project.originalIndex);
-                  onSelectProject(project);
+                  if (isActive) {
+                    playShutter();
+                    onSelectProject(project);
+                  } else {
+                    // Non-center card clicked: do not open, bring smoothly to center
+                    playTick();
+                    targetScrollRef.current = Math.round(smoothScrollRef.current + continuousOffset);
+                    setCurrentIndex(project.originalIndex);
+                  }
                 }}
                 style={{
                   width: `${width}px`,
@@ -954,7 +1004,7 @@ export const SliderView: React.FC<SliderViewProps> = ({
             className="fixed top-0 left-0 pointer-events-none z-50 will-change-transform select-none hidden md:block"
             style={{
               transform: 'translate3d(-300px, -300px, 0)',
-              opacity: isHoveringStage && !isDragging && !isTouchDevice ? 1 : 0,
+              opacity: isHoveringCenterCard && !isDragging && !isTouchDevice ? 1 : 0,
               transition: 'opacity 0.2s ease',
             }}
           >
